@@ -779,9 +779,30 @@ void Stop()
 	Server = nullptr;
 }
 
+bool IsEnabled()
+{
+	return *GetOptions().Network.companionServer;
+}
+
+std::string GetStateJson()
+{
+	if (!IsEnabled())
+		return {};
+	return *Read(StateJson);
+}
+
+std::string GetMapJson()
+{
+	if (!IsEnabled())
+		return {};
+	return *Read(MapJson);
+}
+
 void UpdateGame()
 {
-	if (Server == nullptr || MyPlayer == nullptr)
+	// Snapshots are also read in-process (GetStateJson/GetMapJson, used by the
+	// Android second screen), so they are built even when the server is not running.
+	if (!IsEnabled() || MyPlayer == nullptr)
 		return;
 	const uint64_t now = SDL_GetTicks();
 	if (now - LastMapUpdate >= MapRefreshMs) {
@@ -796,8 +817,6 @@ void UpdateGame()
 
 void EndGame()
 {
-	if (Server == nullptr)
-		return;
 	LastMapHash = 0;
 	Publish(StateJson, R"({"v":1,"inGame":false})");
 }

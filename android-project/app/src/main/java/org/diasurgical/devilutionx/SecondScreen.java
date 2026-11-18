@@ -19,15 +19,20 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Shows the companion UI (map, character, items, quests) on the second screen of
  * dual-screen devices such as the AYN Thor.
  *
- * The UI lives in assets/companion and reads the game state from the companion
- * server embedded in the native game (http://127.0.0.1:8642, see Source/companion).
+ * The UI lives in assets/companion. It reads the game state directly from the
+ * native game through a JavaScript bridge (window.DevilutionXGame, backed by
+ * JNI, see Source/companion and Source/platform/android/android.cpp), so no
+ * network access is needed.
  *
  * The preferred way is an android.app.Presentation (a window owned by the game
  * activity, shown on the other display). If the system refuses it, a separate
@@ -39,6 +44,35 @@ import android.webkit.WebView;
 public class SecondScreen implements DisplayManager.DisplayListener {
 	private static final String TAG = "SecondScreen";
 	static final String UI_URL = "file:///android_asset/companion/index.html?embedded=1";
+
+	/** Latest game state as UTF-8 JSON, empty when the second screen is disabled in the options. */
+	private static native byte[] nativeGetState();
+
+	/** Explored map of the current level as UTF-8 JSON. */
+	private static native byte[] nativeGetMap();
+
+	/** Exposed to the web UI as window.DevilutionXGame. Called on a WebView background thread. */
+	static final class GameBridge {
+		@JavascriptInterface
+		public String getState() {
+			return read(true);
+		}
+
+		@JavascriptInterface
+		public String getMap() {
+			return read(false);
+		}
+
+		private static String read(boolean state) {
+			try {
+				byte[] json = state ? nativeGetState() : nativeGetMap();
+				return json == null ? "" : new String(json, StandardCharsets.UTF_8);
+			} catch (UnsatisfiedLinkError e) {
+				// The native library is not loaded yet.
+				return "";
+			}
+		}
+	}
 
 	private final Activity activity;
 	private final DisplayManager displayManager;
@@ -158,6 +192,7 @@ public class SecondScreen implements DisplayManager.DisplayListener {
 		settings.setDomStorageEnabled(true);
 		settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 		settings.setAllowContentAccess(false);
+		webView.addJavascriptInterface(new GameBridge(), "DevilutionXGame");
 		webView.loadUrl(UI_URL);
 		return webView;
 	}

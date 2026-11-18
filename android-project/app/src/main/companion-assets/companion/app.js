@@ -65,9 +65,19 @@
   let mapVersion = -1;
   let connected = false;
   let currentTab = 'map';
+  let lastError = '';
 
   // ------------------------------------------------------------------ net
+  // In DevilutionX Thor the game is read in-process through a JNI bridge;
+  // in a regular browser the companion HTTP server is used.
+  const game = window.DevilutionXGame || null;
+
   async function fetchJson(path) {
+    if (game) {
+      const json = path === '/api/map' ? game.getMap() : game.getState();
+      if (!json) throw new Error('second screen disabled or game not started');
+      return JSON.parse(json);
+    }
     const ctl = new AbortController();
     const t = setTimeout(() => ctl.abort(), 1500);
     try {
@@ -93,8 +103,10 @@
         } catch { /* retry next poll */ }
       }
       onState(s);
-    } catch {
+    } catch (e) {
+      lastError = (e && e.message) || String(e);
       setConnected(false);
+      updateOverlay();
       delay = RETRY_MS;
     }
     setTimeout(poll, delay);
@@ -104,7 +116,8 @@
     if (ok === connected && $('conn-status').dataset.init) return;
     connected = ok;
     $('conn-status').dataset.init = '1';
-    $('conn-status').textContent = ok ? t('connectedTo', { s: server }) : t('notConnected', { s: server });
+    const where = game ? 'DevilutionX' : server;
+    $('conn-status').textContent = ok ? t('connectedTo', { s: where }) : t('notConnected', { s: where });
     $('conn-status').style.color = ok ? 'var(--ok)' : 'var(--bad)';
     updateOverlay();
   }
@@ -116,6 +129,8 @@
       ov.classList.remove('hidden');
       $('overlay-title').textContent = t('waiting');
       $('overlay-sub').textContent = embedded ? t('waitingSubEmbedded') : t('waitingSub', { s: server });
+      // Diagnostic: how the UI talks to the game, and the last error.
+      $('overlay-sub').textContent += `  [${game ? 'jni' : 'http'}${lastError ? ': ' + lastError : ''}]`;
     } else if (!state || !state.inGame) {
       ov.classList.remove('hidden');
       $('overlay-title').textContent = t('connected');

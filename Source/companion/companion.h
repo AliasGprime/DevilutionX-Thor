@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <string>
+
 namespace devilution {
 namespace companion {
 
@@ -25,6 +27,10 @@ void Stop();
 void UpdateGame();
 /** @brief Called when the player leaves the game (back to the menus). */
 void EndGame();
+/** @brief Latest /api/state JSON, or an empty string when the feature is disabled. Thread-safe. */
+std::string GetStateJson();
+/** @brief Latest /api/map JSON, or an empty string when the feature is disabled. Thread-safe. */
+std::string GetMapJson();
 #else
 inline void Start()
 {
@@ -37,6 +43,14 @@ inline void UpdateGame()
 }
 inline void EndGame()
 {
+}
+inline std::string GetStateJson()
+{
+	return {};
+}
+inline std::string GetMapJson()
+{
+	return {};
 }
 #endif
 

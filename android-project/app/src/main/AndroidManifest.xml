@@ -57,6 +57,7 @@
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
         android:dataExtractionRules="@xml/backup_rules"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="s"
         android:isGame="true"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
