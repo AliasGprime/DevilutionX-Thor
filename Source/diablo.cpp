@@ -32,6 +32,7 @@
 #include "debug.h"
 #endif
 #include "DiabloUI/diabloui.h"
+#include "companion/companion.h"
 #include "controls/control_mode.hpp"
 #include "controls/keymapper.hpp"
 #include "controls/plrctrls.h"
@@ -934,6 +935,7 @@ void RunGameLoop(interface_mode uMsg)
 			demo::RecordGameLoopResult(runGameLoop);
 
 		discord_manager::UpdateGame();
+		companion::UpdateGame();
 
 		if (!runGameLoop) {
 			if (processInput)
@@ -960,6 +962,7 @@ void RunGameLoop(interface_mode uMsg)
 	}
 
 	demo::NotifyGameLoopEnd();
+	companion::EndGame();
 
 	if (gbIsMultiplayer) {
 		pfile_write_hero(/*writeGameData=*/false);
@@ -1263,6 +1266,8 @@ void ApplicationInit()
 
 void DiabloInit()
 {
+	companion::Start();
+
 	if (forceSpawn || *GetOptions().GameMode.shareware)
 		gbIsSpawn = true;
 
@@ -1345,6 +1350,7 @@ void DiabloSplash()
 
 void DiabloDeinit()
 {
+	companion::Stop();
 	FreeItemGFX();
 
 	LuaShutdown();

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Compagnon DevilutionX</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="hud">
+    <div class="hud-row">
+      <div class="hud-id">
+        <span id="hud-name">—</span>
+        <span id="hud-class" class="muted"></span>
+      </div>
+      <div id="hud-loc" class="hud-loc">—</div>
+    </div>
+    <div class="bars">
+      <div class="bar hp"><div class="fill" id="bar-hp"></div><span id="txt-hp">0 / 0</span></div>
+      <div class="bar mana"><div class="fill" id="bar-mana"></div><span id="txt-mana">0 / 0</span></div>
+      <div class="bar xp"><div class="fill" id="bar-xp"></div><span id="txt-xp"></span></div>
+    </div>
+    <div id="alerts" class="alerts"></div>
+  </header>
+
+  <main>
+    <section id="tab-map" class="tab active">
+      <canvas id="map"></canvas>
+      <div id="monsters" class="monster-list"></div>
+      <div class="map-buttons">
+        <button id="btn-zoom-in" data-i18n-aria="zoomIn" aria-label="Zoom avant">+</button>
+        <button id="btn-zoom-out" data-i18n-aria="zoomOut" aria-label="Zoom arrière">−</button>
+        <button id="btn-center" data-i18n-aria="center" aria-label="Centrer sur le personnage">◎</button>
+        <button id="btn-legend" data-i18n-aria="legend" aria-label="Légende">?</button>
+      </div>
+      <div id="legend" class="legend hidden">
+        <div><i class="dot player"></i><span data-i18n="lgYou">Vous</span></div>
+        <div><i class="dot monster"></i><span data-i18n="lgMonster">Monstre</span></div>
+        <div><i class="dot unique"></i><span data-i18n="lgUnique">Monstre unique</span></div>
+        <div><i class="dot npc"></i><span data-i18n="lgNpc">PNJ / allié</span></div>
+        <div><i class="dot item"></i><span data-i18n="lgItem">Objet</span></div>
+        <div><i class="dot magic"></i><span data-i18n="lgMagic">Objet magique</span></div>
+        <div><i class="dot uniqitem"></i><span data-i18n="lgUniqueItem">Objet unique</span></div>
+        <div><i class="dot gold"></i><span data-i18n="lgGold">Or</span></div>
+        <div><i class="sq chest"></i><span data-i18n="lgChest">Coffre / sarcophage</span></div>
+        <div><i class="sq shrine"></i><span data-i18n="lgShrine">Autel</span></div>
+        <div><i class="sq door"></i><span data-i18n="lgDoor">Porte</span></div>
+        <div><i class="tri"></i><span data-i18n="lgStairs">Escalier</span></div>
+      </div>
+    </section>
+
+    <section id="tab-char" class="tab">
+      <div class="card">
+        <h2 data-i18n="attributes">Attributs</h2>
+        <table class="stats">
+          <thead><tr><th></th><th data-i18n="base">Base</th><th data-i18n="now">Actuel</th><th data-i18n="max">Max</th></tr></thead>
+          <tbody id="attr-body"></tbody>
+        </table>
+        <div id="stat-points" class="notice hidden"></div>
+      </div>
+      <div class="card grid2" id="combat"></div>
+      <div class="card">
+        <h2 data-i18n="resistances">Résistances</h2>
+        <div class="grid3" id="resists"></div>
+      </div>
+      <div class="card grid2" id="misc"></div>
+    </section>
+
+    <section id="tab-items" class="tab">
+      <div class="card">
+        <h2 data-i18n="equipment">Équipement</h2>
+        <div id="equipment"></div>
+      </div>
+      <div class="card">
+        <h2><span data-i18n="belt">Ceinture</span> <span id="potions" class="muted small"></span></h2>
+        <div id="belt" class="belt"></div>
+      </div>
+    </section>
+
+    <section id="tab-quests" class="tab">
+      <div class="card">
+        <h2 data-i18n="quests">Quêtes</h2>
+        <div id="quests"></div>
+        <label class="toggle"><input type="checkbox" id="show-hidden-quests"> <span data-i18n="showHiddenQuests">Afficher les quêtes non découvertes (spoiler)</span></label>
+      </div>
+    </section>
+
+    <section id="tab-settings" class="tab">
+      <div class="card">
+        <h2 data-i18n="language">Langue</h2>
+        <div class="segmented" id="opt-lang">
+          <button data-lang="auto" data-i18n="langAuto">Automatique (système)</button>
+          <button data-lang="fr">Français</button>
+          <button data-lang="en">English</button>
+        </div>
+      </div>
+      <div class="card standalone-only">
+        <h2 data-i18n="connection">Connexion</h2>
+        <label class="field"><span data-i18n="serverAddress">Adresse du serveur</span>
+          <input type="url" id="server-url" placeholder="http://127.0.0.1:8642" autocomplete="off" autocapitalize="off" spellcheck="false">
+        </label>
+        <div class="row">
+          <button id="btn-save-server" class="primary" data-i18n="save">Enregistrer</button>
+          <button id="btn-reset-server" data-i18n="default">Par défaut</button>
+        </div>
+        <p class="muted small" data-i18n-html="serverHelp">Par défaut, DevilutionX partage les infos sur l'appareil lui-même (127.0.0.1, port 8642). Pour un autre appareil sur le Wi-Fi, activez <code>Companion Allow Remote</code> dans <code>diablo.ini</code>.</p>
+        <p class="small"><span data-i18n="status">État :</span> <span id="conn-status">—</span></p>
+      </div>
+      <div class="card native-only">
+        <h2 data-i18n="screen">Écran</h2>
+        <label class="toggle"><input type="checkbox" id="opt-keep-focus" checked> <span data-i18n="keepFocus">Ne pas prendre le focus au jeu (la manette reste sur le jeu)</span></label>
+        <label class="toggle"><input type="checkbox" id="opt-keep-screen" checked> <span data-i18n="keepScreen">Garder l'écran allumé</span></label>
+      </div>
+      <div class="card">
+        <h2 data-i18n="map">Carte</h2>
+        <label class="toggle"><input type="checkbox" id="opt-labels" checked> <span data-i18n="optLabels">Afficher les noms (PNJ, uniques, escaliers)</span></label>
+        <label class="toggle"><input type="checkbox" id="opt-items" checked> <span data-i18n="optItems">Afficher les objets au sol</span></label>
+      </div>
+    </section>
+
+    <div id="overlay" class="overlay">
+      <div class="overlay-box">
+        <div class="spinner"></div>
+        <div id="overlay-title"></div>
+        <div id="overlay-sub" class="muted small"></div>
+      </div>
+    </div>
+  </main>
+
+  <nav id="tabs">
+    <button data-tab="map" class="active"><span class="ico">🗺</span><span data-i18n="tabMap">Carte</span></button>
+    <button data-tab="char"><span class="ico">⚔</span><span data-i18n="tabChar">Perso</span></button>
+    <button data-tab="items"><span class="ico">🛡</span><span data-i18n="tabItems">Objets</span></button>
+    <button data-tab="quests"><span class="ico">📜</span><span data-i18n="tabQuests">Quêtes</span></button>
+    <button data-tab="settings"><span class="ico">⚙</span></button>
+  </nav>
+</div>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

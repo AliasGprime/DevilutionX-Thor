@@ -1,8 +1,8 @@
 <resources>
-<string name="app_name" translatable="false">DevilutionX</string>
+<string name="app_name" translatable="false">DevilutionX Thor</string>
 <!--  Strings used for fragments for navigation  -->
 <string name="guide_full_installation">
-Voidaksesi pelata kokoversiota, sinun on siirettävä alkuperäisen pelin DIABDAT.MPQ-tiedosto kansioon Android/data/org.diasurgical.devilutionx/files.
+Voidaksesi pelata kokoversiota, sinun on siirettävä alkuperäisen pelin DIABDAT.MPQ-tiedosto kansioon Android/data/org.diasurgical.devilutionx.thor/files.
 <br/>
 \n
 <br/>

@@ -106,6 +106,16 @@
         <activity android:name=".ImportActivity"
             android:theme="@style/Theme.MyApplication">
         </activity>
+
+        <!-- Second screen companion, only used when a Presentation window is refused -->
+        <activity android:name=".CompanionActivity"
+            android:exported="false"
+            android:taskAffinity=".companion"
+            android:excludeFromRecents="true"
+            android:resizeableActivity="true"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:configChanges="layoutDirection|locale|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation|density">
+        </activity>
     </application>
 
 </manifest>

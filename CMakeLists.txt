@@ -113,6 +113,7 @@ option(WIN_NSIS "Generate an NSIS installer" OFF)
 # Network options
 cmake_dependent_option(DISABLE_TCP "Disable TCP multiplayer option" OFF "NOT NONET" ON)
 cmake_dependent_option(DISABLE_ZERO_TIER "Disable ZeroTier multiplayer option" OFF "NOT NONET" ON)
+cmake_dependent_option(COMPANION_SERVER "Local HTTP server that shares game state with a companion app" ON "NOT NONET;NOT DISABLE_TCP" OFF)
 
 if(USE_SDL1 AND USE_SDL3)
   message(FATAL_ERROR "USE_SDL1 and USE_SDL3 cannot be set at the same time")
@@ -242,6 +243,10 @@ if(NONET)
   # This means that if a `Platforms.cmake` sets NONET to OFF, PACKET_ENCRYPTION will not automatically
   # reflect that.
   set(PACKET_ENCRYPTION OFF)
+endif()
+if(NONET OR DISABLE_TCP)
+  # The companion server uses asio, which is only available with TCP networking.
+  set(COMPANION_SERVER OFF)
 endif()
 # === End of option overrides ===
 

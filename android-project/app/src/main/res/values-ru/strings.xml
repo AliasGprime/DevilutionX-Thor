@@ -1,8 +1,8 @@
 <resources>
-	<string name="app_name" translatable="false">DevilutionX</string>
+	<string name="app_name" translatable="false">DevilutionX Thor</string>
 	<!-- Strings used for fragments for navigation -->
 
-	<string name="guide_full_installation">Чтобы играть в полную версию, Вам необходимо поместить файл DIABDAT.MPQ в Android/data/org.diasurgical.devilutionx/files.<br/>\n<br/>\nЕсли у Вас нет полной версии Вы можете приобрести её на <a href="https://www.gog.com/game/diablo">GOG.com.</a></string>
+	<string name="guide_full_installation">Чтобы играть в полную версию, Вам необходимо поместить файл DIABDAT.MPQ в Android/data/org.diasurgical.devilutionx.thor/files.<br/>\n<br/>\nЕсли у Вас нет полной версии Вы можете приобрести её на <a href="https://www.gog.com/game/diablo">GOG.com.</a></string>
 	<string name="guide_shareware">В качестве альтернативы Вы можете загрузить spawn-версию, чтобы играть в demo часть игры.</string>
 	<string name="faq_link">Смотрите <a href="https://github.com/diasurgical/devilutionX/blob/master/docs/installing.md#installing">инструкцию по установке</a> для более подробной информации.</string>
 	<string name="game_data_retry">Проверить снова</string>

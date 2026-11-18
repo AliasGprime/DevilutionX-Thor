@@ -19,6 +19,7 @@ import java.util.Locale;
 
 public class DevilutionXSDLActivity extends SDLActivity {
 	private ExternalFilesManager fileManager;
+	private SecondScreen secondScreen;
 	private boolean noExit;
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,8 @@ public class DevilutionXSDLActivity extends SDLActivity {
 		migrateSaveGames();
 
 		super.onCreate(savedInstanceState);
+
+		secondScreen = new SecondScreen(this);
 	}
 
 	/**
@@ -49,7 +52,16 @@ public class DevilutionXSDLActivity extends SDLActivity {
 			startActivity(intent);
 			noExit = true;
 			this.finish();
+			return;
 		}
+
+		// Map, character, items and quests on the second screen (AYN Thor)
+		secondScreen.start();
+	}
+
+	protected void onStop() {
+		secondScreen.stop();
+		super.onStop();
 	}
 
 	/**

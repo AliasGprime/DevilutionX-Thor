@@ -1025,6 +1025,12 @@ if(NOT USE_SDL1)
     controls/touch/renderers.cpp)
 endif()
 
+if(COMPANION_SERVER)
+  list(APPEND libdevilutionx_SRCS
+    companion/companion.cpp
+  )
+endif()
+
 if(DISCORD_INTEGRATION)
   list(APPEND libdevilutionx_SRCS
     discord/discord.cpp

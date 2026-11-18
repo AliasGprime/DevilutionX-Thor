@@ -691,6 +691,12 @@ struct NetworkOptions : OptionCategoryBase {
 	char szPreviousHost[129];
 	/** @brief What network port to use. */
 	OptionEntryInt<uint16_t> port;
+	/** @brief Share game state with a companion app through a local HTTP server. */
+	OptionEntryBoolean companionServer;
+	/** @brief Accept companion connections from other devices on the network (not only this device). */
+	OptionEntryBoolean companionAllowRemote;
+	/** @brief Port used by the companion HTTP server. */
+	OptionEntryInt<uint16_t> companionPort;
 };
 
 struct ChatOptions : OptionCategoryBase {
