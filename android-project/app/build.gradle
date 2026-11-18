@@ -17,7 +17,7 @@ android {
 		minSdkVersion 21
 		targetSdkVersion 35
 		versionCode 29
-		versionName project.file('../../VERSION').text.trim()
+		versionName project.file('../../VERSION').text.trim() + '-thor' + project.file('../../THOR_VERSION').text.trim()
 		externalNativeBuild {
 			cmake {
 				arguments "-DANDROID_STL=c++_static"

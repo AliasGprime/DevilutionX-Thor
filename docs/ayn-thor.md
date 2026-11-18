@@ -57,8 +57,9 @@ contrôler Diablo.
 
 ## Publier une nouvelle version
 
-Pousser un tag `thor-v<version>` (par exemple `thor-v1.1.0`) : le workflow
-**AYN Thor** compile l'APK signée et crée la release correspondante.
+Changer le numéro dans `THOR_VERSION` (par exemple `1.1.0`) et pousser sur la
+branche `ayn-thor` : le workflow **AYN Thor** compile l'APK signée et publie la
+release `thor-v1.1.0`. Les autres pushs compilent seulement l'APK (artifact).
 
 ## Signature des APK
 
@@ -81,7 +82,7 @@ resistances), **items** (equipment durability with alerts, belt, potion count) a
 **quests**, in English or French. Touching the bottom screen does not take the
 input focus (or the gamepad) away from the game.
 
-Install `devilutionx-thor.apk` from the latest release (tags `thor-v*` publish a release automatically). It
+Install `devilutionx-thor.apk` from the latest release (bump `THOR_VERSION` and push to `ayn-thor` to publish a new release). It
 installs as **DevilutionX Thor** (`org.diasurgical.devilutionx.thor`) next to the
 regular app, with its own data folder
 `Android/data/org.diasurgical.devilutionx.thor/files/` for `DIABDAT.MPQ` and saves.
