@@ -10,12 +10,22 @@ name: AYN Thor
 #   THOR_KEY_ALIAS         key alias
 #   THOR_KEY_PASSWORD      key password
 # Without them the APK is signed with the runner's throwaway debug key.
+#
+# Releases: pushing a tag named thor-v* (e.g. thor-v1.0.0) builds the APK and
+# publishes it as a GitHub release (only when the signing key is available).
 on:
   push:
+    branches:
+      - '**'
+    tags:
+      - 'thor-v*'
     paths-ignore:
       - '*.md'
       - 'docs/**'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -37,7 +47,7 @@ jobs:
       uses: actions/setup-java@v5
       with:
         java-version: '17'
-        distribution: 'adopt'
+        distribution: 'temurin'
         cache: gradle
 
     - name: Install CMake
@@ -70,8 +80,42 @@ jobs:
         THOR_KEY_PASSWORD: ${{ secrets.THOR_KEY_PASSWORD }}
       run: ./gradlew assembleRelease
 
+    - name: Rename APK
+      run: cp android-project/app/build/outputs/apk/release/app-release.apk devilutionx-thor.apk
+
     - name: Upload
       uses: actions/upload-artifact@v7
       with:
         name: devilutionx-thor.apk
-        path: android-project/app/build/outputs/apk/release/app-release.apk
+        path: devilutionx-thor.apk
+
+    - name: Publish release
+      if: startsWith(github.ref, 'refs/tags/thor-v')
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        if [ -z "$THOR_KEYSTORE_FILE" ]; then
+          echo "::error::Not publishing an APK signed with a throwaway key: add the THOR_* secrets."
+          exit 1
+        fi
+        version="${GITHUB_REF_NAME#thor-}"
+        cat > release-notes.md <<NOTES
+        **DevilutionX Thor ${version}** : DevilutionX pour l'AYN Thor, avec la carte, le personnage, les objets et les quêtes sur l'écran du bas.
+
+        ### Installation
+        1. Télécharger \`devilutionx-thor.apk\` ci-dessous et l'installer sur le Thor.
+        2. Copier \`DIABDAT.MPQ\` (et vos sauvegardes \`*.sv\`) dans \`Android/data/org.diasurgical.devilutionx.thor/files/\`.
+        3. Lancer **DevilutionX Thor** : l'écran du bas s'allume automatiquement.
+
+        S'installe à côté du DevilutionX habituel. Les nouvelles versions s'installent par-dessus sans perdre les sauvegardes.
+
+        ---
+        DevilutionX for the AYN Thor, with the map, character, items and quests on the bottom screen. Install the APK, copy \`DIABDAT.MPQ\` and your saves to \`Android/data/org.diasurgical.devilutionx.thor/files/\`, then start **DevilutionX Thor**.
+
+        Documentation : [docs/ayn-thor.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/docs/ayn-thor.md)
+        NOTES
+        gh release create "$GITHUB_REF_NAME" devilutionx-thor.apk \
+          --repo "$GITHUB_REPOSITORY" \
+          --title "DevilutionX Thor ${version}" \
+          --notes-file release-notes.md \
+          --latest

@@ -20,9 +20,8 @@ contrôler Diablo.
 
 ## Installation
 
-1. Télécharger `devilutionx-thor.apk` depuis le workflow GitHub Actions
-   **AYN Thor** (onglet *Actions* → dernier run réussi → *Artifacts*) et
-   l'installer.
+1. Télécharger `devilutionx-thor.apk` depuis la dernière
+   [release](../../../releases/latest) et l'installer.
 2. L'appli s'appelle **DevilutionX Thor** et s'installe *à côté* du DevilutionX
    habituel (identifiant `org.diasurgical.devilutionx.thor`). Elle a donc son
    propre dossier de données :
@@ -56,6 +55,11 @@ contrôler Diablo.
   DevilutionX sur PC et en ouvrant
   `android-project/app/src/main/companion-assets/companion/index.html`.
 
+## Publier une nouvelle version
+
+Pousser un tag `thor-v<version>` (par exemple `thor-v1.1.0`) : le workflow
+**AYN Thor** compile l'APK signée et crée la release correspondante.
+
 ## Signature des APK
 
 Pour que chaque nouvelle version s'installe comme une mise à jour (sans
@@ -77,7 +81,7 @@ resistances), **items** (equipment durability with alerts, belt, potion count) a
 **quests**, in English or French. Touching the bottom screen does not take the
 input focus (or the gamepad) away from the game.
 
-Install `devilutionx-thor.apk` from the **AYN Thor** GitHub Actions workflow. It
+Install `devilutionx-thor.apk` from the latest release (tags `thor-v*` publish a release automatically). It
 installs as **DevilutionX Thor** (`org.diasurgical.devilutionx.thor`) next to the
 regular app, with its own data folder
 `Android/data/org.diasurgical.devilutionx.thor/files/` for `DIABDAT.MPQ` and saves.
