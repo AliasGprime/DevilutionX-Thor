@@ -1403,9 +1403,12 @@ void DrawView(const Surface &out, Point startPosition)
 		DrawSpellBook(out);
 	}
 
-	DrawDurIcon(out);
+	const bool mainPanelVisible = !IsMainPanelHidden();
 
-	DrawLevelButton(out);
+	if (mainPanelVisible) {
+		DrawDurIcon(out);
+		DrawLevelButton(out);
+	}
 
 	if (CharFlag) {
 		DrawChr(out);
@@ -1450,10 +1453,12 @@ void DrawView(const Surface &out, Point startPosition)
 	DrawPlrMsg(out);
 	gmenu_draw(out);
 	doom_draw(out);
-	DrawInfoBox(out);
 	UpdateLifeManaPercent(); // Update life/mana totals before rendering any portion of the flask.
-	DrawLifeFlaskUpper(out);
-	DrawManaFlaskUpper(out);
+	if (mainPanelVisible) {
+		DrawInfoBox(out);
+		DrawLifeFlaskUpper(out);
+		DrawManaFlaskUpper(out);
+	}
 }
 
 /**
@@ -1849,6 +1854,7 @@ void DrawAndBlit()
 	bool drawCtrlPan = false;
 
 	const Rectangle &mainPanel = GetMainPanel();
+	const bool mainPanelVisible = !IsMainPanelHidden();
 
 	if (gnScreenWidth > mainPanel.size.width || IsRedrawEverything()) {
 		drawHealth = true;
@@ -1871,6 +1877,10 @@ void DrawAndBlit()
 
 	this_sdl_thread::yield();
 	DrawView(out, ViewPosition);
+	if (!mainPanelVisible) {
+		// The panel is shown on the second screen: the game view uses the whole screen.
+		drawCtrlPan = drawHealth = drawMana = drawControlButtons = drawBelt = false;
+	}
 	if (drawCtrlPan) {
 		DrawMainPanel(out);
 	}
@@ -1891,10 +1901,11 @@ void DrawAndBlit()
 	if (drawChatInput) {
 		DrawChatBox(out);
 	}
-	DrawXPBar(out);
-	if (*GetOptions().Gameplay.showHealthValues)
+	if (mainPanelVisible)
+		DrawXPBar(out);
+	if (mainPanelVisible && *GetOptions().Gameplay.showHealthValues)
 		DrawFlaskValues(out, { mainPanel.position.x + 134, mainPanel.position.y + 28 }, MyPlayer->_pHitPoints.whole(), MyPlayer->_pMaxHP.whole());
-	if (*GetOptions().Gameplay.showManaValues)
+	if (mainPanelVisible && *GetOptions().Gameplay.showManaValues)
 		DrawFlaskValues(out, { mainPanel.position.x + mainPanel.size.width - 138, mainPanel.position.y + 28 },
 		    (HasAnyOf(InspectPlayer->_pIFlags, ItemSpecialEffect::NoMana) || MyPlayer->hasNoMana()) ? 0 : MyPlayer->_pMana.whole(),
 		    HasAnyOf(InspectPlayer->_pIFlags, ItemSpecialEffect::NoMana) ? 0 : MyPlayer->_pMaxMana.whole());

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 
 namespace devilution {
 namespace companion {
@@ -31,6 +32,15 @@ void EndGame();
 std::string GetStateJson();
 /** @brief Latest /api/map JSON, or an empty string when the feature is disabled. Thread-safe. */
 std::string GetMapJson();
+/**
+ * @brief Queues a command from the second screen, run on the game thread. Thread-safe.
+ *
+ * "panel:N" (main panel button N, see PressMainPanelButton), "belt:N" (use belt
+ * slot N), "spells" (spell selection), "levelup" (character panel).
+ */
+void QueueCommand(std::string_view command);
+/** @brief Whether the second screen currently shows the companion UI. Thread-safe. */
+void SetSecondScreenActive(bool active);
 #else
 inline void Start()
 {
@@ -51,6 +61,12 @@ inline std::string GetStateJson()
 inline std::string GetMapJson()
 {
 	return {};
+}
+inline void QueueCommand(std::string_view command)
+{
+}
+inline void SetSecondScreenActive(bool active)
+{
 }
 #endif
 

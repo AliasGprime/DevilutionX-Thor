@@ -25,6 +25,37 @@
   </header>
 
   <main>
+    <section id="tab-hud" class="tab">
+      <div class="hud">
+        <div class="hud-side">
+          <div class="orb life" id="orb-life"><div class="orb-fill"></div><span class="orb-txt" id="orb-life-txt"></span></div>
+          <div class="hud-buttons">
+            <button class="hb" data-cmd="panel:0" data-open="char" data-i18n="hudChar">PERSO</button>
+            <button class="hb" data-cmd="panel:1" data-open="quests" data-i18n="hudQuests">QUÊTES</button>
+            <button class="hb" data-cmd="panel:2" data-open="automap" data-i18n="hudMap">CARTE</button>
+            <button class="hb" data-cmd="panel:3" data-open="menu" data-i18n="hudMenu">MENU</button>
+          </div>
+        </div>
+        <div class="hud-center">
+          <div class="hud-belt" id="hud-belt"></div>
+          <div class="hud-info" id="hud-info"></div>
+          <div class="hud-row2">
+            <button class="hb levelup hidden" id="hud-levelup" data-cmd="levelup"><span>+</span> <span data-i18n="hudLevelUp">Niveau supérieur</span></button>
+            <button class="hb friendly hidden" id="hud-friendly" data-cmd="panel:7" data-i18n="hudFriendly">Amical / hostile</button>
+          </div>
+        </div>
+        <div class="hud-side">
+          <div class="orb mana" id="orb-mana"><div class="orb-fill"></div><span class="orb-txt" id="orb-mana-txt"></span></div>
+          <div class="hud-buttons">
+            <button class="hb" data-cmd="panel:4" data-open="inv" data-i18n="hudInv">INV</button>
+            <button class="hb" data-cmd="panel:5" data-open="spellbook" data-i18n="hudSpells">SORTS</button>
+            <button class="hb spell" id="hud-spell" data-cmd="spells" data-open="spellList"><span class="sp-name" id="hud-spell-name">—</span><span class="sp-sub" data-i18n="hudSpell">Sort actif</span></button>
+          </div>
+        </div>
+      </div>
+      <p class="muted small standalone-only hud-note" data-i18n="hudTouchOnly">Les boutons ne fonctionnent que dans DevilutionX Thor.</p>
+    </section>
+
     <section id="tab-map" class="tab active">
       <canvas id="map"></canvas>
       <div id="monsters" class="monster-list"></div>
@@ -129,6 +160,7 @@
   </main>
 
   <nav id="tabs">
+    <button data-tab="hud"><span class="ico">✠</span><span data-i18n="tabHud">HUD</span></button>
     <button data-tab="map" class="active"><span class="ico">🗺</span><span data-i18n="tabMap">Carte</span></button>
     <button data-tab="char"><span class="ico">⚔</span><span data-i18n="tabChar">Perso</span></button>
     <button data-tab="items"><span class="ico">🛡</span><span data-i18n="tabItems">Objets</span></button>

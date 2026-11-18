@@ -51,6 +51,20 @@ public class SecondScreen implements DisplayManager.DisplayListener {
 	/** Explored map of the current level as UTF-8 JSON. */
 	private static native byte[] nativeGetMap();
 
+	/** Touch control from the HUD tab, e.g. "panel:4" (inventory) or "belt:0". */
+	private static native void nativeSendCommand(String command);
+
+	/** Tells the game whether the second screen is shown (the main panel is then hidden). */
+	private static native void nativeSetSecondScreenActive(boolean active);
+
+	static void setActive(boolean active) {
+		try {
+			nativeSetSecondScreenActive(active);
+		} catch (UnsatisfiedLinkError e) {
+			// The native library is not loaded yet.
+		}
+	}
+
 	/** Exposed to the web UI as window.DevilutionXGame. Called on a WebView background thread. */
 	static final class GameBridge {
 		@JavascriptInterface
@@ -61,6 +75,17 @@ public class SecondScreen implements DisplayManager.DisplayListener {
 		@JavascriptInterface
 		public String getMap() {
 			return read(false);
+		}
+
+		@JavascriptInterface
+		public void sendCommand(String command) {
+			if (command == null || command.length() > 32)
+				return;
+			try {
+				nativeSendCommand(command);
+			} catch (UnsatisfiedLinkError e) {
+				// The native library is not loaded yet.
+			}
 		}
 
 		private static String read(boolean state) {
@@ -102,6 +127,7 @@ public class SecondScreen implements DisplayManager.DisplayListener {
 		dismissPresentation();
 		CompanionActivity.finishInstance();
 		fallbackDisplayId = Display.INVALID_DISPLAY;
+		setActive(false);
 	}
 
 	@Override
@@ -123,6 +149,7 @@ public class SecondScreen implements DisplayManager.DisplayListener {
 		Display target = findSecondDisplay();
 		if (target == null) {
 			dismissPresentation();
+			setActive(false);
 			return;
 		}
 		int targetId = target.getDisplayId();
@@ -135,6 +162,7 @@ public class SecondScreen implements DisplayManager.DisplayListener {
 		try {
 			presentation = new CompanionPresentation(activity, target);
 			presentation.show();
+			setActive(true);
 			Log.i(TAG, "Companion shown as a presentation on display " + targetId);
 		} catch (WindowManager.InvalidDisplayException | WindowManager.BadTokenException | SecurityException e) {
 			Log.w(TAG, "Presentation refused on display " + targetId + ", launching an activity instead", e);
@@ -175,6 +203,7 @@ public class SecondScreen implements DisplayManager.DisplayListener {
 			options.setLaunchDisplayId(displayId);
 			activity.startActivity(intent, options.toBundle());
 			fallbackDisplayId = displayId;
+			setActive(true);
 		} catch (RuntimeException e) {
 			Log.e(TAG, "Unable to show the companion on display " + displayId, e);
 		}

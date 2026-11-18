@@ -65,6 +65,21 @@ extern DVL_API_FOR_TEST bool CharFlag;
 extern DVL_API_FOR_TEST bool SpellSelectFlag;
 
 [[nodiscard]] const Rectangle &GetMainPanel();
+
+/**
+ * @brief Whether the main (bottom) control panel is currently hidden, e.g. because its
+ * content is shown on a second screen. While hidden, GetMainPanel() returns an
+ * off-screen rectangle of height 0 so the game view uses the whole screen.
+ */
+[[nodiscard]] bool IsMainPanelHidden();
+void SetMainPanelHidden(bool hidden);
+
+/**
+ * @brief Same as clicking a main panel button.
+ * @param button 0 character, 1 quests, 2 automap, 3 main menu, 4 inventory,
+ *               5 spellbook, 6 send message, 7 friendly mode
+ */
+void PressMainPanelButton(int button);
 [[nodiscard]] const Rectangle &GetLeftPanel();
 [[nodiscard]] const Rectangle &GetRightPanel();
 bool IsLeftPanelOpen();

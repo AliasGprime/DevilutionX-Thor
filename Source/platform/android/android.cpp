@@ -45,4 +45,22 @@ JNIEXPORT jbyteArray JNICALL Java_org_diasurgical_devilutionx_SecondScreen_nativ
 {
 	return devilution::ToByteArray(env, devilution::companion::GetMapJson());
 }
+
+// Touch controls of the second screen (HUD tab), run on the game thread.
+JNIEXPORT void JNICALL Java_org_diasurgical_devilutionx_SecondScreen_nativeSendCommand(JNIEnv *env, jclass cls, jstring command)
+{
+	if (command == nullptr)
+		return;
+	const char *chars = env->GetStringUTFChars(command, nullptr);
+	if (chars == nullptr)
+		return;
+	devilution::companion::QueueCommand(chars);
+	env->ReleaseStringUTFChars(command, chars);
+}
+
+// Whether the companion UI is shown on the second screen (the main panel is then hidden).
+JNIEXPORT void JNICALL Java_org_diasurgical_devilutionx_SecondScreen_nativeSetSecondScreenActive(JNIEnv *env, jclass cls, jboolean active)
+{
+	devilution::companion::SetSecondScreenActive(active == JNI_TRUE);
+}
 }

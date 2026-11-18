@@ -958,6 +958,7 @@ NetworkOptions::NetworkOptions()
     : OptionCategoryBase("Network", N_("Network"), N_("Network Settings"))
     , port("Port", OptionEntryFlags::Invisible, "Port", "What network port to use.", 6112)
     , companionServer("Companion Server", OptionEntryFlags::None, N_("Second Screen"), N_("Shows the map, character, items and quests on the second screen of dual-screen devices such as the AYN Thor."), true)
+    , companionHidePanel("Companion Hide Panel", OptionEntryFlags::None, N_("Hide Control Panel"), N_("Hides the control panel (life, mana, belt and buttons) of the main screen while the second screen shows it, so the game uses the whole screen."), true)
     , companionAllowRemote("Companion Allow Remote", OptionEntryFlags::Invisible, "Companion Allow Remote", "Accept companion app connections from other devices on the local network.", false)
     , companionPort("Companion Port", OptionEntryFlags::Invisible, "Companion Port", "Port used by the companion app server.", 8642)
 {
@@ -968,6 +969,7 @@ std::vector<OptionEntryBase *> NetworkOptions::GetEntries()
 		&port,
 #ifdef COMPANION_SERVER
 		&companionServer,
+		&companionHidePanel,
 		&companionAllowRemote,
 		&companionPort,
 #endif

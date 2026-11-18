@@ -89,7 +89,18 @@
     }
   }
 
+  let pollTimer = 0;
+  let polling = false;
+
+  /** Polls right away, e.g. after a HUD button so the UI reflects it quickly. */
+  function pollSoon() {
+    if (polling) return;
+    clearTimeout(pollTimer);
+    pollTimer = setTimeout(poll, 60);
+  }
+
   async function poll() {
+    polling = true;
     let delay = POLL_MS;
     try {
       const s = await fetchJson('/api/state');
@@ -109,7 +120,9 @@
       updateOverlay();
       delay = RETRY_MS;
     }
-    setTimeout(poll, delay);
+    polling = false;
+    clearTimeout(pollTimer);
+    pollTimer = setTimeout(poll, delay);
   }
 
   function setConnected(ok) {
@@ -147,6 +160,7 @@
     updateOverlay();
     if (!s.inGame) return;
     renderHud(s);
+    if (currentTab === 'hud') renderHudTab(s);
     if (currentTab === 'char') renderChar(s);
     if (currentTab === 'items') renderItems(s);
     if (currentTab === 'quests') renderQuests(s);
@@ -287,6 +301,81 @@
     $('quests').innerHTML = list.length
       ? list.map(([q, cls, label]) => `<div class="quest"><span>${esc(q.name)}</span><span class="st ${cls}">${esc(label)}</span></div>`).join('')
       : `<div class="muted">${t('noQuests')}</div>`;
+  }
+
+  // ------------------------------------------------------------------ HUD tab
+  const canControl = !!(game && game.sendCommand);
+
+  function sendCommand(cmd, el) {
+    if (!canControl || !cmd) return;
+    game.sendCommand(cmd);
+    if (el) {
+      el.classList.add('flash');
+      setTimeout(() => el.classList.remove('flash'), 150);
+    }
+    pollSoon();
+  }
+
+  $('tab-hud').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-cmd]');
+    if (el && !el.disabled) sendCommand(el.dataset.cmd, el);
+  });
+  if (!canControl) for (const b of document.querySelectorAll('#tab-hud .hb')) b.disabled = true;
+
+  function setOrb(id, txtId, value, max) {
+    const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
+    $(id).style.setProperty('--pct', pct + '%');
+    $(txtId).textContent = `${value}/${max}`;
+    return pct;
+  }
+
+  function beltIcon(it) {
+    const k = it.kind || 'other';
+    if (/heal|mana|rejuv|elixir/.test(k)) return '<i class="flask"></i>';
+    if (k === 'scroll' || k === 'book') return '<i class="icon-scroll"></i>';
+    return '<i class="icon-other"></i>';
+  }
+
+  /** Short belt label: potion type, or the spell of a scroll. */
+  function beltLabel(it) {
+    const short = { heal: 'beltHeal', fullheal: 'beltFullHeal', mana: 'beltMana', fullmana: 'beltFullMana', rejuv: 'beltRejuv', fullrejuv: 'beltFullRejuv' }[it.kind];
+    if (short) return t(short);
+    if (it.kind === 'scroll') return it.name.replace(/^(scroll of|parchemin d[e']\s*)\s*/i, '');
+    return it.name;
+  }
+
+  function renderHudTab(s) {
+    const p = s.player;
+    const hpPct = setOrb('orb-life', 'orb-life-txt', p.hp, p.hpMax);
+    $('orb-life').classList.toggle('low', hpPct <= 30 && !p.dead);
+    setOrb('orb-mana', 'orb-mana-txt', p.mana, p.manaMax);
+
+    const belt = p.belt || [];
+    const html = [];
+    for (let i = 0; i < 8; i++) {
+      const it = belt[i];
+      if (!it) {
+        html.push(`<button class="slot-btn empty" disabled><span class="n">${i + 1}</span></button>`);
+      } else {
+        html.push(`<button class="slot-btn k-${esc(it.kind || 'other')}" data-cmd="belt:${i}" ${canControl ? '' : 'disabled'}><span class="n">${i + 1}</span>${beltIcon(it)}<span class="lbl ${itemClass(it)}">${esc(beltLabel(it))}</span></button>`);
+      }
+    }
+    const beltHtml = html.join('');
+    if ($('hud-belt').dataset.html !== beltHtml) { // avoid replacing buttons while they are being touched
+      $('hud-belt').innerHTML = beltHtml;
+      $('hud-belt').dataset.html = beltHtml;
+    }
+
+    const hud = s.hud || { open: {}, info: '' };
+    $('hud-info').textContent = hud.info || '';
+    for (const b of document.querySelectorAll('#tab-hud [data-open]')) b.classList.toggle('on', !!hud.open[b.dataset.open]);
+
+    const spell = $('hud-spell');
+    spell.className = 'hb spell' + (p.spell ? ' t' + p.spell.type : '') + (hud.open.spellList ? ' on' : '');
+    $('hud-spell-name').textContent = p.spell ? p.spell.name + (p.spell.level > 0 ? ` (${p.spell.level})` : '') : t('hudNoSpell');
+
+    $('hud-levelup').classList.toggle('hidden', !(p.statPoints > 0));
+    $('hud-friendly').classList.toggle('hidden', !s.game.multiplayer);
   }
 
   function renderMonsterList(s) {
@@ -602,6 +691,7 @@
     if (native && native.setFocusable) native.setFocusable(name === 'settings' || !settings.keepFocus);
     updateOverlay();
     if (state && state.inGame) {
+      if (name === 'hud') renderHudTab(state);
       if (name === 'char') renderChar(state);
       if (name === 'items') renderItems(state);
       if (name === 'quests') renderQuests(state);
@@ -655,7 +745,7 @@
   // ------------------------------------------------------------------ boot
   window.addEventListener('resize', resize);
   setFollow(true);
-  showTab(store.get('tab', 'map'));
+  showTab(store.get('tab', 'hud'));
   resize();
   poll();
 })();

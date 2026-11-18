@@ -22,6 +22,7 @@
 #include <string>
 #include <string_view>
 #include <thread>
+#include <vector>
 
 #include <asio/buffer.hpp>
 #include <asio/io_context.hpp>
@@ -40,7 +41,11 @@
 #endif
 
 #include "automap.h"
+#include "control/control.hpp"
+#include "diablo.h"
 #include "game_mode.hpp"
+#include "gmenu.h"
+#include "inv.h"
 #include "items.h"
 #include "levels/dun_tile_data.hpp"
 #include "levels/gendung.h"
@@ -51,7 +56,10 @@
 #include "multi.h"
 #include "objects.h"
 #include "options.h"
+#include "panels/quest_log.hpp"
+#include "panels/spell_list.hpp"
 #include "player.h"
+#include "stores.h"
 #include "tables/playerdat.hpp"
 #include "tables/questdat.hpp"
 #include "tables/spelldat.h"
@@ -260,6 +268,35 @@ bool IsCellVisible(Point p)
 	return InDungeonBounds(p) && HasAnyOf(dFlags[p.x][p.y], DungeonFlag::Visible);
 }
 
+/** Rough item category, used by the UI to pick an icon/colour. */
+const char *ItemKind(const Item &item)
+{
+	if (item._itype == ItemType::Gold)
+		return "gold";
+	switch (item._iMiscId) {
+	case IMISC_HEAL: return "heal";
+	case IMISC_FULLHEAL: return "fullheal";
+	case IMISC_MANA: return "mana";
+	case IMISC_FULLMANA: return "fullmana";
+	case IMISC_REJUV: return "rejuv";
+	case IMISC_FULLREJUV: return "fullrejuv";
+	case IMISC_ELIXSTR:
+	case IMISC_ELIXMAG:
+	case IMISC_ELIXDEX:
+	case IMISC_ELIXVIT:
+	case IMISC_SPECELIX: return "elixir";
+	case IMISC_SCROLL:
+	case IMISC_SCROLLT: return "scroll";
+	case IMISC_BOOK: return "book";
+	default: break;
+	}
+	if (item._iMiscId > IMISC_OILFIRST && item._iMiscId < IMISC_OILLAST)
+		return "oil";
+	if (item._iMiscId > IMISC_RUNEFIRST && item._iMiscId < IMISC_RUNELAST)
+		return "rune";
+	return "other";
+}
+
 void WriteItem(JsonWriter &w, const Item &item)
 {
 	if (item.isEmpty()) {
@@ -268,6 +305,7 @@ void WriteItem(JsonWriter &w, const Item &item)
 	}
 	w.beginObject();
 	w.field("name", std::string(item.getName().str()));
+	w.field("kind", ItemKind(item));
 	w.field("quality", static_cast<int>(item._iMagical));
 	w.field("identified", item._iIdentified);
 	w.field("usable", item._iStatFlag);
@@ -544,6 +582,21 @@ void BuildState()
 	w.endObject();
 
 	WritePlayer(w, myPlayer);
+
+	// Main panel state, for the HUD tab of the second screen.
+	w.key("hud").beginObject();
+	w.field("panelHidden", IsMainPanelHidden());
+	w.field("info", std::string(InfoString.str()));
+	w.key("open").beginObject();
+	w.field("char", CharFlag);
+	w.field("quests", QuestLogIsOpen);
+	w.field("automap", AutomapActive);
+	w.field("menu", gmenu_is_active());
+	w.field("inv", invflag);
+	w.field("spellbook", SpellbookFlag);
+	w.field("spellList", SpellSelectFlag);
+	w.endObject();
+	w.endObject();
 	WriteQuests(w);
 	WriteEntities(w, myPlayer);
 
@@ -784,6 +837,88 @@ bool IsEnabled()
 	return *GetOptions().Network.companionServer;
 }
 
+namespace {
+
+std::atomic<bool> SecondScreenActive { false };
+std::mutex CommandMutex;
+std::vector<std::string> PendingCommands;
+
+bool CanUseBelt()
+{
+	return MyPlayer != nullptr && !MyPlayerIsDead && MyPlayer->_pmode != PM_DEATH && PauseMode != 2;
+}
+
+/** Runs a command sent by the second screen. Game thread only. */
+void RunCommand(std::string_view command)
+{
+	const size_t colon = command.find(':');
+	const std::string_view name = command.substr(0, colon);
+	int arg = -1;
+	if (colon != std::string_view::npos && colon + 1 < command.size()) {
+		arg = 0;
+		for (const char c : command.substr(colon + 1)) {
+			if (c < '0' || c > '9')
+				return;
+			arg = arg * 10 + (c - '0');
+			if (arg > 100)
+				return;
+		}
+	}
+
+	if (name == "panel") {
+		// Same as clicking a button of the main panel (see PressMainPanelButton)
+		PressMainPanelButton(arg);
+	} else if (name == "belt") {
+		if (arg < 0 || arg >= MaxBeltItems || !CanUseBelt())
+			return;
+		const Item &item = MyPlayer->SpdList[arg];
+		if (!item.isEmpty() && item._itype != ItemType::Gold)
+			UseInvItem(INVITEM_BELT_FIRST + arg);
+	} else if (name == "spells") {
+		// Spell selection, like the spell icon of the main panel
+		if (IsPlayerInStore())
+			return;
+		if (SpellSelectFlag) {
+			SpellSelectFlag = false;
+			return;
+		}
+		CloseCharPanel();
+		QuestLogIsOpen = false;
+		CloseInventory();
+		SpellbookFlag = false;
+		DoSpeedBook();
+	} else if (name == "levelup") {
+		OpenCharPanel();
+	}
+}
+
+void ProcessCommands()
+{
+	std::vector<std::string> commands;
+	{
+		const std::lock_guard<std::mutex> lock(CommandMutex);
+		commands.swap(PendingCommands);
+	}
+	for (const std::string &command : commands)
+		RunCommand(command);
+}
+
+} // namespace
+
+void QueueCommand(std::string_view command)
+{
+	if (command.empty() || command.size() > 32)
+		return;
+	const std::lock_guard<std::mutex> lock(CommandMutex);
+	if (PendingCommands.size() < 16)
+		PendingCommands.emplace_back(command);
+}
+
+void SetSecondScreenActive(bool active)
+{
+	SecondScreenActive = active;
+}
+
 std::string GetStateJson()
 {
 	if (!IsEnabled())
@@ -802,8 +937,13 @@ void UpdateGame()
 {
 	// Snapshots are also read in-process (GetStateJson/GetMapJson, used by the
 	// Android second screen), so they are built even when the server is not running.
-	if (!IsEnabled() || MyPlayer == nullptr)
+	if (MyPlayer == nullptr)
 		return;
+	const bool enabled = IsEnabled();
+	SetMainPanelHidden(enabled && SecondScreenActive && *GetOptions().Network.companionHidePanel);
+	if (!enabled)
+		return;
+	ProcessCommands();
 	const uint64_t now = SDL_GetTicks();
 	if (now - LastMapUpdate >= MapRefreshMs) {
 		LastMapUpdate = now;

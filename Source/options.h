@@ -693,6 +693,8 @@ struct NetworkOptions : OptionCategoryBase {
 	OptionEntryInt<uint16_t> port;
 	/** @brief Share game state with a companion app through a local HTTP server. */
 	OptionEntryBoolean companionServer;
+	/** @brief Hide the main panel on the main screen while the second screen shows it. */
+	OptionEntryBoolean companionHidePanel;
 	/** @brief Accept companion connections from other devices on the network (not only this device). */
 	OptionEntryBoolean companionAllowRemote;
 	/** @brief Port used by the companion HTTP server. */

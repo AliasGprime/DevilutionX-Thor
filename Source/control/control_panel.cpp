@@ -10,6 +10,7 @@
 #include "engine/backbuffer_state.hpp"
 #include "engine/load_cel.hpp"
 #include "engine/render/clx_render.hpp"
+#include "engine/render/scrollrt.h"
 #include "engine/trn.hpp"
 #include "gamemenu.h"
 #include "headless_mode.hpp"
@@ -43,14 +44,32 @@ bool MainPanelFlag;
 bool MainPanelButtonDown;
 bool SpellSelectFlag;
 Rectangle MainPanel;
+/** Off-screen, zero-height stand-in for MainPanel while the panel is hidden. */
+Rectangle HiddenMainPanel;
+bool MainPanelHidden;
 Rectangle LeftPanel;
 Rectangle RightPanel;
 std::optional<OwnedSurface> BottomBuffer;
 OptionalOwnedClxSpriteList GoldBoxBuffer;
 
+bool IsMainPanelHidden()
+{
+	// The chat input lives in the main panel, so it comes back while typing.
+	return MainPanelHidden && !ChatFlag && gnScreenWidth > MainPanel.size.width;
+}
+
+void SetMainPanelHidden(bool hidden)
+{
+	if (hidden == MainPanelHidden)
+		return;
+	MainPanelHidden = hidden;
+	CalcViewportGeometry();
+	RedrawEverything();
+}
+
 const Rectangle &GetMainPanel()
 {
-	return MainPanel;
+	return IsMainPanelHidden() ? HiddenMainPanel : MainPanel;
 }
 const Rectangle &GetLeftPanel()
 {
@@ -245,6 +264,10 @@ void CalculatePanelAreas()
 	MainPanel = {
 		{ (gnScreenWidth - MainPanelSize.width) / 2, gnScreenHeight - MainPanelSize.height },
 		MainPanelSize
+	};
+	HiddenMainPanel = {
+		{ MainPanel.position.x, gnScreenHeight },
+		{ MainPanelSize.width, 0 }
 	};
 	LeftPanel = {
 		{ 0, 0 },
@@ -542,6 +565,74 @@ void CycleAutomapType()
 	}
 }
 
+namespace {
+
+/** @return false when the game menu must stay open */
+bool HandleMainPanelButton(int i)
+{
+	switch (i) {
+	case PanelButtonCharinfo:
+		ToggleCharPanel();
+		break;
+	case PanelButtonQlog:
+		CloseCharPanel();
+		CloseGoldWithdraw();
+		CloseStash();
+		CloseVisualStore();
+		if (!QuestLogIsOpen)
+			StartQuestlog();
+		else
+			QuestLogIsOpen = false;
+		break;
+	case PanelButtonAutomap:
+		DoAutoMap();
+		break;
+	case PanelButtonMainmenu:
+		if (MyPlayerIsDead) {
+			if (!gbIsMultiplayer) {
+				if (gbValidSaveFile)
+					gamemenu_load_game(false);
+				else
+					gamemenu_exit_game(false);
+			} else {
+				NetSendCmd(true, CMD_RETOWN);
+			}
+			break;
+		} else if (MyPlayer->hasNoLife()) {
+			break;
+		}
+		qtextflag = false;
+		gamemenu_handle_previous();
+		return false;
+	case PanelButtonInventory:
+		SpellbookFlag = false;
+		invflag = !invflag;
+		CloseGoldWithdraw();
+		CloseStash();
+		CloseVisualStore();
+		CloseGoldDrop();
+		break;
+	case PanelButtonSpellbook:
+		CloseInventory();
+		CloseGoldDrop();
+		SpellbookFlag = !SpellbookFlag;
+		break;
+	case PanelButtonSendmsg:
+		if (ChatFlag)
+			ResetChat();
+		else
+			TypeChatMessage();
+		break;
+	case PanelButtonFriendly:
+		// Toggle friendly Mode
+		NetSendCmd(true, CMD_FRIENDLYMODE);
+		break;
+	}
+	return true;
+}
+
+} // namespace
+
 void CheckMainPanelButtonUp()
 {
 	bool gamemenuOff = true;
@@ -561,68 +652,19 @@ void CheckMainPanelButtonUp()
 		if (!button.contains(MousePosition))
 			continue;
 
-		switch (i) {
-		case PanelButtonCharinfo:
-			ToggleCharPanel();
-			break;
-		case PanelButtonQlog:
-			CloseCharPanel();
-			CloseGoldWithdraw();
-			CloseStash();
-			CloseVisualStore();
-			if (!QuestLogIsOpen)
-				StartQuestlog();
-			else
-				QuestLogIsOpen = false;
-			break;
-		case PanelButtonAutomap:
-			DoAutoMap();
-			break;
-		case PanelButtonMainmenu:
-			if (MyPlayerIsDead) {
-				if (!gbIsMultiplayer) {
-					if (gbValidSaveFile)
-						gamemenu_load_game(false);
-					else
-						gamemenu_exit_game(false);
-				} else {
-					NetSendCmd(true, CMD_RETOWN);
-				}
-				break;
-			} else if (MyPlayer->hasNoLife()) {
-				break;
-			}
-			qtextflag = false;
-			gamemenu_handle_previous();
+		if (!HandleMainPanelButton(i))
 			gamemenuOff = false;
-			break;
-		case PanelButtonInventory:
-			SpellbookFlag = false;
-			invflag = !invflag;
-			CloseGoldWithdraw();
-			CloseStash();
-			CloseVisualStore();
-			CloseGoldDrop();
-			break;
-		case PanelButtonSpellbook:
-			CloseInventory();
-			CloseGoldDrop();
-			SpellbookFlag = !SpellbookFlag;
-			break;
-		case PanelButtonSendmsg:
-			if (ChatFlag)
-				ResetChat();
-			else
-				TypeChatMessage();
-			break;
-		case PanelButtonFriendly:
-			// Toggle friendly Mode
-			NetSendCmd(true, CMD_FRIENDLYMODE);
-			break;
-		}
 	}
 
 	if (gamemenuOff)
+		gamemenu_off();
+}
+
+void PressMainPanelButton(int button)
+{
+	if (button < PanelButtonFirst || button > PanelButtonLast)
+		return;
+	if (HandleMainPanelButton(button))
 		gamemenu_off();
 }
 

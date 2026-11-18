@@ -13,6 +13,11 @@ l'écran du haut, et sur l'écran du bas (1240 × 1080), en direct :
 - **Objets** : équipement avec durabilité (alerte quand elle est basse), ceinture,
   nombre de potions ;
 - **Quêtes** en cours / terminées ;
+- **HUD** : le panneau de contrôle du jeu en version tactile : orbes de vie et de
+  mana, ceinture (toucher un emplacement utilise l'objet), boutons PERSO, QUÊTES,
+  CARTE, MENU, INV, SORTS, sort actif (ouvre la sélection de sort), bouton
+  « Niveau supérieur » et texte d'information. Le panneau est alors **masqué sur
+  l'écran du haut** : le jeu y occupe tout l'écran ;
 - en **français et en anglais** (selon la langue du système, modifiable dans ⚙).
 
 Toucher l'écran du bas ne retire pas le focus au jeu : la manette continue de
@@ -34,6 +39,10 @@ contrôler Diablo.
 ## Réglages
 
 - **Réglages → Network → Second Screen** : active ou désactive l'écran du bas.
+- **Réglages → Network → Hide Control Panel** : masque le panneau de contrôle de
+  l'écran du haut tant que l'écran du bas l'affiche (activé par défaut). Le panneau
+  revient automatiquement si l'écran du bas est fermé, et pendant la saisie d'un
+  message de chat en multijoueur.
 - Dans cette version, *Pause Game When Window Loses Focus* est désactivé par défaut.
 - Dans ⚙ sur l'écran du bas : langue, affichage des noms et des objets sur la
   carte, quêtes non découvertes.
@@ -78,8 +87,11 @@ screen while the bottom screen (1240 × 1080) shows, live, the explored **map**
 (automap style, visible monsters with health bars, ground items, chests, shrines,
 stairs, town NPCs; pinch to zoom, drag to pan, double tap to recenter), the
 **character** (life, mana, XP to next level, attributes, armor, to-hit, damage,
-resistances), **items** (equipment durability with alerts, belt, potion count) and
-**quests**, in English or French. Touching the bottom screen does not take the
+resistances), **items** (equipment durability with alerts, belt, potion count),
+**quests** and a touch **HUD** (life/mana orbs, belt, CHAR/QUESTS/MAP/MENU/INV/SPELLS
+buttons, ready spell, level up, info text), in English or French. While the HUD is
+on the bottom screen, the control panel is hidden on the top screen so the game
+uses the whole screen (Settings → Network → Hide Control Panel). Touching the bottom screen does not take the
 input focus (or the gamepad) away from the game.
 
 Install `devilutionx-thor.apk` from the latest release (bump `THOR_VERSION` and push to `ayn-thor` to publish a new release). It

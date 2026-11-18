@@ -45,8 +45,11 @@ public class CompanionActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		if (instance.get() == this)
+		if (instance.get() == this) {
 			instance = new WeakReference<>(null);
+			// Bring the control panel back on the main screen.
+			SecondScreen.setActive(false);
+		}
 		if (webView != null)
 			webView.destroy();
 		super.onDestroy();

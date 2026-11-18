@@ -5,7 +5,12 @@ window.I18N = {
   fr: {
     locale: 'fr-FR',
     // tabs
-    tabMap: 'Carte', tabChar: 'Perso', tabItems: 'Objets', tabQuests: 'Quêtes',
+    tabHud: 'HUD', tabMap: 'Carte', tabChar: 'Perso', tabItems: 'Objets', tabQuests: 'Quêtes',
+    // HUD (main panel of the game)
+    hudChar: 'PERSO', hudQuests: 'QUÊTES', hudMap: 'CARTE', hudMenu: 'MENU', hudInv: 'INV', hudSpells: 'SORTS',
+    hudSpell: 'Sort actif', hudNoSpell: 'Aucun', hudLevelUp: 'Niveau supérieur', hudFriendly: 'Amical / hostile',
+    hudTouchOnly: 'Les boutons ne fonctionnent que dans DevilutionX Thor.',
+    beltHeal: 'Soin', beltFullHeal: 'Soin +', beltMana: 'Mana', beltFullMana: 'Mana +', beltRejuv: 'Régén.', beltFullRejuv: 'Régén. +',
     // map
     zoomIn: 'Zoom avant', zoomOut: 'Zoom arrière', center: 'Centrer sur le personnage', legend: 'Légende',
     lgYou: 'Vous', lgMonster: 'Monstre', lgUnique: 'Monstre unique', lgNpc: 'PNJ / allié',
@@ -54,7 +59,11 @@ window.I18N = {
   },
   en: {
     locale: 'en-US',
-    tabMap: 'Map', tabChar: 'Hero', tabItems: 'Items', tabQuests: 'Quests',
+    tabHud: 'HUD', tabMap: 'Map', tabChar: 'Hero', tabItems: 'Items', tabQuests: 'Quests',
+    hudChar: 'CHAR', hudQuests: 'QUESTS', hudMap: 'MAP', hudMenu: 'MENU', hudInv: 'INV', hudSpells: 'SPELLS',
+    hudSpell: 'Ready spell', hudNoSpell: 'None', hudLevelUp: 'Level Up', hudFriendly: 'Friendly / hostile',
+    hudTouchOnly: 'The buttons only work in DevilutionX Thor.',
+    beltHeal: 'Healing', beltFullHeal: 'Full heal', beltMana: 'Mana', beltFullMana: 'Full mana', beltRejuv: 'Rejuv.', beltFullRejuv: 'Full rejuv.',
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', center: 'Center on character', legend: 'Legend',
     lgYou: 'You', lgMonster: 'Monster', lgUnique: 'Unique monster', lgNpc: 'NPC / ally',
     lgItem: 'Item', lgMagic: 'Magic item', lgUniqueItem: 'Unique item', lgGold: 'Gold',
