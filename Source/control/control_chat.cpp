@@ -223,7 +223,7 @@ void TypeChatMessage()
 	for (bool &talkButtonDown : TalkButtonsDown) {
 		talkButtonDown = false;
 	}
-	sgbPlrTalkTbl = GetMainPanel().size.height + PanelPaddingHeight;
+	sgbPlrTalkTbl = MainPanelSize.height + PanelPaddingHeight;
 	RedrawEverything();
 	TalkSaveIndex = NextTalkSave;
 

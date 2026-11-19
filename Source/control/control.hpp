@@ -36,6 +36,9 @@
 namespace devilution {
 
 constexpr Size SidePanelSize { 320, 352 };
+/** Size of the main (bottom) control panel artwork. Use it for buffers and layout
+ * inside the panel: GetMainPanel() has a height of 0 while the panel is hidden. */
+constexpr Size MainPanelSize { 640, 128 };
 
 constexpr Rectangle InfoBoxRect = { { 177, 46 }, { 288, 64 } };
 

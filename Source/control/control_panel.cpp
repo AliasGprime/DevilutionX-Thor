@@ -260,8 +260,6 @@ bool IsLevelUpButtonVisible()
 
 void CalculatePanelAreas()
 {
-	constexpr Size MainPanelSize { 640, 128 };
-
 	MainPanel = {
 		{ (gnScreenWidth - MainPanelSize.width) / 2, gnScreenHeight - MainPanelSize.height },
 		MainPanelSize
@@ -380,7 +378,7 @@ void DrawPanelBox(const Surface &out, SDL_Rect srcRect, Point targetPosition)
 std::expected<void, std::string> InitMainPanel()
 {
 	if (!HeadlessMode) {
-		BottomBuffer.emplace(GetMainPanel().size.width, (GetMainPanel().size.height + PanelPaddingHeight) * (IsChatAvailable() ? 2 : 1));
+		BottomBuffer.emplace(MainPanelSize.width, (MainPanelSize.height + PanelPaddingHeight) * (IsChatAvailable() ? 2 : 1));
 		pManaBuff.emplace(88, 88);
 		pLifeBuff.emplace(88, 88);
 
@@ -388,8 +386,8 @@ std::expected<void, std::string> InitMainPanel()
 		RETURN_IF_ERROR(LoadCharPanel());
 		RETURN_IF_ERROR(LoadLargeSpellIcons());
 		{
-			ASSIGN_OR_RETURN(const OwnedClxSpriteList sprite, LoadCelWithStatus("ctrlpan\\panel8", GetMainPanel().size.width));
-			ClxDraw(*BottomBuffer, { 0, (GetMainPanel().size.height + PanelPaddingHeight) - 1 }, sprite[0]);
+			ASSIGN_OR_RETURN(const OwnedClxSpriteList sprite, LoadCelWithStatus("ctrlpan\\panel8", MainPanelSize.width));
+			ClxDraw(*BottomBuffer, { 0, (MainPanelSize.height + PanelPaddingHeight) - 1 }, sprite[0]);
 		}
 		{
 			const Point bulbsPosition { 0, 87 };
@@ -403,8 +401,8 @@ std::expected<void, std::string> InitMainPanel()
 	if (IsChatAvailable()) {
 		if (!HeadlessMode) {
 			{
-				ASSIGN_OR_RETURN(const OwnedClxSpriteList sprite, LoadCelWithStatus("ctrlpan\\talkpanl", GetMainPanel().size.width));
-				ClxDraw(*BottomBuffer, { 0, ((GetMainPanel().size.height + PanelPaddingHeight) * 2) - 1 }, sprite[0]);
+				ASSIGN_OR_RETURN(const OwnedClxSpriteList sprite, LoadCelWithStatus("ctrlpan\\talkpanl", MainPanelSize.width));
+				ClxDraw(*BottomBuffer, { 0, ((MainPanelSize.height + PanelPaddingHeight) * 2) - 1 }, sprite[0]);
 			}
 			multiButtons = LoadCel("ctrlpan\\p8but2", 33);
 			talkButtons = LoadCel("ctrlpan\\talkbutt", 61);
@@ -456,7 +454,7 @@ std::expected<void, std::string> InitMainPanel()
 
 void DrawMainPanel(const Surface &out)
 {
-	DrawPanelBox(out, MakeSdlRect(0, sgbPlrTalkTbl + PanelPaddingHeight, GetMainPanel().size.width, GetMainPanel().size.height), GetMainPanel().position);
+	DrawPanelBox(out, MakeSdlRect(0, sgbPlrTalkTbl + PanelPaddingHeight, MainPanelSize.width, MainPanelSize.height), GetMainPanel().position);
 	DrawInfoBox(out);
 }
 

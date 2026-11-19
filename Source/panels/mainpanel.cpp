@@ -54,7 +54,7 @@ void RenderMainButton(const Surface &out, int buttonId, std::string_view text, i
 	const Point panelPosition { MainPanelButtonRect[buttonId].position + Displacement { 4, 17 } };
 	DrawButtonOnPanel(panelPosition, text, frame);
 	if (IsChatAvailable())
-		DrawButtonOnPanel(panelPosition + Displacement { 0, GetMainPanel().size.height + 16 }, text, frame);
+		DrawButtonOnPanel(panelPosition + Displacement { 0, MainPanelSize.height + 16 }, text, frame);
 
 	const Point position { 0, 19 * buttonId };
 	int spacing = 2;
@@ -105,7 +105,7 @@ std::expected<void, std::string> LoadMainPanel()
 		const std::string_view text = _("voice");
 		const int textWidth = GetLineWidth(text, GameFont12, 1);
 		for (size_t i = 0; i < NumOtherPlayers; ++i) {
-			const Point position { 176, static_cast<int>(GetMainPanel().size.height + 101 + (18 * i)) };
+			const Point position { 176, static_cast<int>(MainPanelSize.height + 101 + (18 * i)) };
 			RenderClxSprite(*BottomBuffer, (*talkButton)[0], position);
 			const int width = std::min<int>(textWidth, (*PanelButton)[0].width());
 			RenderClxSprite(BottomBuffer->subregion(position.x + ((talkButtonWidth - width) / 2), position.y + 6, width, 9), (*PanelButtonGrime)[1], { 0, 0 });

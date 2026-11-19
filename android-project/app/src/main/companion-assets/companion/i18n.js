@@ -49,7 +49,7 @@ window.I18N = {
     serverHelp: "Par défaut, DevilutionX partage les infos sur l'appareil lui-même (127.0.0.1, port 8642). Pour un autre appareil sur le Wi-Fi, activez <code>Companion Allow Remote</code> dans <code>diablo.ini</code>.",
     status: 'État :', connectedTo: 'connecté à {s}', notConnected: 'non connecté ({s})',
     screen: 'Écran', keepFocus: 'Ne pas prendre le focus au jeu (la manette reste sur le jeu)', keepScreen: "Garder l'écran allumé",
-    map: 'Carte', optLabels: 'Afficher les noms (PNJ, uniques, escaliers)', optItems: 'Afficher les objets au sol',
+    map: 'Carte', optLabels: 'Afficher les noms (PNJ, uniques, escaliers)', optItems: 'Afficher les objets au sol', optMapBelt: 'Afficher la ceinture sous la carte',
     // overlay
     waiting: 'En attente de DevilutionX…',
     waitingSub: 'Lancez le jeu (version avec serveur compagnon). Adresse : {s}',
@@ -96,7 +96,7 @@ window.I18N = {
     serverHelp: 'By default, DevilutionX shares its data on this device only (127.0.0.1, port 8642). To use another device on Wi-Fi, enable <code>Companion Allow Remote</code> in <code>diablo.ini</code>.',
     status: 'Status:', connectedTo: 'connected to {s}', notConnected: 'not connected ({s})',
     screen: 'Screen', keepFocus: "Don't take focus from the game (controller stays on the game)", keepScreen: 'Keep screen on',
-    map: 'Map', optLabels: 'Show names (NPCs, uniques, stairs)', optItems: 'Show items on the ground',
+    map: 'Map', optLabels: 'Show names (NPCs, uniques, stairs)', optItems: 'Show items on the ground', optMapBelt: 'Show the belt under the map',
     waiting: 'Waiting for DevilutionX…',
     waitingSub: 'Start the game (build with companion server). Address: {s}',
     waitingSubEmbedded: 'Starting… If this message stays, check that "Second Screen" is enabled in Settings → Network.',

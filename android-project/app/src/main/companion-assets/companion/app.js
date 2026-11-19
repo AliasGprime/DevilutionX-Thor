@@ -26,6 +26,7 @@
     keepFocus: store.get('opt.keepFocus', true),
     keepScreen: store.get('opt.keepScreen', true),
     hiddenQuests: store.get('opt.hiddenQuests', false),
+    mapBelt: store.get('opt.mapBelt', true),
   };
 
   // ------------------------------------------------------------------ i18n
@@ -165,6 +166,7 @@
     if (currentTab === 'items') renderItems(s);
     if (currentTab === 'quests') renderQuests(s);
     renderMonsterList(s);
+    if (currentTab === 'map') renderMapBelt(s);
 
     const p = s.player.pos;
     if (!lastPos || lastPos[0] !== p[0] || lastPos[1] !== p[1]) {
@@ -344,13 +346,9 @@
     return it.name;
   }
 
-  function renderHudTab(s) {
-    const p = s.player;
-    const hpPct = setOrb('orb-life', 'orb-life-txt', p.hp, p.hpMax);
-    $('orb-life').classList.toggle('low', hpPct <= 30 && !p.dead);
-    setOrb('orb-mana', 'orb-mana-txt', p.mana, p.manaMax);
-
-    const belt = p.belt || [];
+  /** Belt slots as buttons (tap = use), shared by the HUD and the map. */
+  function renderBelt(container, belt) {
+    belt = belt || [];
     const html = [];
     for (let i = 0; i < 8; i++) {
       const it = belt[i];
@@ -361,10 +359,30 @@
       }
     }
     const beltHtml = html.join('');
-    if ($('hud-belt').dataset.html !== beltHtml) { // avoid replacing buttons while they are being touched
-      $('hud-belt').innerHTML = beltHtml;
-      $('hud-belt').dataset.html = beltHtml;
+    if (container.dataset.html !== beltHtml) { // avoid replacing buttons while they are being touched
+      container.innerHTML = beltHtml;
+      container.dataset.html = beltHtml;
     }
+  }
+
+  $('map-belt').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-cmd]');
+    if (el && !el.disabled) sendCommand(el.dataset.cmd, el);
+  });
+
+  function renderMapBelt(s) {
+    const el = $('map-belt');
+    el.classList.toggle('hidden', !settings.mapBelt);
+    if (settings.mapBelt) renderBelt(el, s.player.belt);
+  }
+
+  function renderHudTab(s) {
+    const p = s.player;
+    const hpPct = setOrb('orb-life', 'orb-life-txt', p.hp, p.hpMax);
+    $('orb-life').classList.toggle('low', hpPct <= 30 && !p.dead);
+    setOrb('orb-mana', 'orb-mana-txt', p.mana, p.manaMax);
+
+    renderBelt($('hud-belt'), p.belt);
 
     const hud = s.hud || { open: {}, info: '' };
     $('hud-info').textContent = hud.info || '';
@@ -491,7 +509,9 @@
     const [psx, psy] = iso(ppos[0], ppos[1]);
     if (view.follow) { view.cx = psx; view.cy = psy; }
     const z = view.zoom * dpr;
-    ctx.setTransform(z, 0, 0, z, W / 2 - view.cx * z, H / 2 - view.cy * z);
+    // Keep the player centred in the part of the map not covered by the belt bar.
+    const beltH = settings.mapBelt ? 52 * dpr : 0;
+    ctx.setTransform(z, 0, 0, z, W / 2 - view.cx * z, (H - beltH) / 2 - view.cy * z);
 
     if (floorPath) {
       ctx.fillStyle = '#2b2017';
@@ -692,6 +712,7 @@
     updateOverlay();
     if (state && state.inGame) {
       if (name === 'hud') renderHudTab(state);
+      if (name === 'map') renderMapBelt(state);
       if (name === 'char') renderChar(state);
       if (name === 'items') renderItems(state);
       if (name === 'quests') renderQuests(state);
@@ -722,6 +743,7 @@
   };
   bindToggle('opt-labels', 'labels');
   bindToggle('opt-items', 'items');
+  bindToggle('opt-map-belt', 'mapBelt', () => state && state.inGame && renderMapBelt(state));
   bindToggle('show-hidden-quests', 'hiddenQuests', () => state && state.inGame && renderQuests(state));
   bindToggle('opt-keep-focus', 'keepFocus');
   bindToggle('opt-keep-screen', 'keepScreen', (v) => native && native.setKeepScreenOn && native.setKeepScreenOn(v));

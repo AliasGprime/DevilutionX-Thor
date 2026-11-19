@@ -285,6 +285,20 @@ body:not(.native) .native-only { display: none; }
 .sq.door { background: #6d5a45; }
 .tri { display: inline-block; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 10px solid #d6b26a; }
 
+/* Belt under the map (tap a slot to use it) */
+.map-belt {
+  position: absolute; left: 6px; right: 54px; bottom: 6px;
+  display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px;
+}
+.map-belt .slot-btn { aspect-ratio: auto; height: 46px; background: rgba(18, 13, 9, .9); }
+.map-belt .slot-btn .n { font-size: 9px; left: 3px; top: 1px; }
+.map-belt .slot-btn .lbl { font-size: 8px; }
+.map-belt .flask { width: 14px; height: 17px; }
+.map-belt .flask::before { left: 4px; right: 4px; top: -4px; height: 4px; }
+#tab-map .map-buttons { flex-direction: column; }
+#tab-map .map-buttons button { width: 40px; height: 40px; }
+.legend { bottom: 58px; }
+
 /* ---------- HUD (main panel of the game) ---------- */
 #tab-hud { padding: 8px; }
 .hud {
@@ -454,7 +468,5 @@ body:not(.native) .native-only { display: none; }
     #tab-char, #tab-items, #tab-quests, #tab-settings { column-count: 2; column-gap: 8px; }
     .card { break-inside: avoid; }
   }
-  .map-buttons { flex-direction: row; }
-  .map-buttons button { width: 38px; height: 38px; font-size: 18px; }
-  .legend { bottom: 54px; }
+  .map-buttons button { font-size: 18px; }
 }

@@ -7,7 +7,8 @@ l'écran du haut, et sur l'écran du bas (1240 × 1080), en direct :
 
 - **Carte** de l'étage exploré (style automap), votre position, les monstres en vue
   (avec barre de vie), les objets au sol, coffres, autels, escaliers, PNJ en ville.
-  Pincer pour zoomer, glisser pour déplacer, double tap pour recentrer ;
+  Pincer pour zoomer, glisser pour déplacer, double tap pour recentrer. La
+  ceinture est affichée sous la carte : toucher un emplacement utilise l'objet ;
 - **Perso** : vie, mana, XP jusqu'au prochain niveau, attributs, armure, toucher,
   dégâts, résistances, sort prêt ;
 - **Objets** : équipement avec durabilité (alerte quand elle est basse), ceinture,
