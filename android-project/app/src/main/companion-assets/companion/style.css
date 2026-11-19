@@ -231,6 +231,7 @@ table.stats td:first-child { text-align: left; color: var(--text); }
 .segmented button { flex: 1 1 auto; }
 .segmented button.active { background: #5a3a12; border-color: #8a6022; color: var(--gold); }
 body.embedded .standalone-only { display: none; }
+.app-version { text-align: center; margin: 4px 0 8px; }
 .row { display: flex; gap: 8px; margin-top: 8px; }
 body:not(.native) .native-only { display: none; }
 

@@ -764,6 +764,10 @@
     };
   });
 
+  // Version of DevilutionX Thor (only in the app)
+  const appVersion = game && game.getVersion ? game.getVersion() : '';
+  if (appVersion) $('app-version').textContent = 'DevilutionX Thor v' + appVersion;
+
   // ------------------------------------------------------------------ boot
   window.addEventListener('resize', resize);
   setFollow(true);

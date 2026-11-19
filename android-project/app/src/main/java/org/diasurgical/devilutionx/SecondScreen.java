@@ -78,6 +78,11 @@ public class SecondScreen implements DisplayManager.DisplayListener {
 		}
 
 		@JavascriptInterface
+		public String getVersion() {
+			return BuildConfig.THOR_VERSION;
+		}
+
+		@JavascriptInterface
 		public void sendCommand(String command) {
 			if (command == null || command.length() > 32)
 				return;
