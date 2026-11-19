@@ -57,6 +57,9 @@ public class DevilutionXSDLActivity extends SDLActivity {
 
 		// Map, character, items and quests on the second screen (AYN Thor)
 		secondScreen.start();
+
+		// Offer to install a newer AYN Thor release from GitHub
+		UpdateChecker.checkOnce(this);
 	}
 
 	protected void onStop() {

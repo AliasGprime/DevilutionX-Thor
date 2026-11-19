@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AYN Thor edition -->
+<resources>
+	<string name="update_title">Mise à jour de DevilutionX Thor</string>
+	<string name="update_message">La version %1$s est disponible (installée : %2$s). Mettre à jour maintenant ?</string>
+	<string name="update_install">Mettre à jour</string>
+	<string name="update_later">Plus tard</string>
+	<string name="update_skip">Ignorer cette version</string>
+	<string name="update_downloading">Téléchargement de la version %1$s…</string>
+	<string name="update_failed">La mise à jour n\'a pas pu être installée. Vous pouvez la télécharger depuis la page de la release.</string>
+	<string name="update_open_page">Ouvrir la page</string>
+</resources>

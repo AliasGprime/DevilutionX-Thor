@@ -37,6 +37,15 @@ contrôler Diablo.
    `*.sv` depuis `Android/data/org.diasurgical.devilutionx/files/`.
 3. Lancer **DevilutionX Thor** : l'écran du bas s'allume automatiquement.
 
+## Mises à jour
+
+Au lancement, l'appli vérifie la dernière release GitHub du dépôt dont elle est
+issue. Si une version plus récente existe, elle propose de la télécharger et de
+l'installer (Mettre à jour / Plus tard / Ignorer cette version). Android demande
+une confirmation, et la première fois l'autorisation d'installer des applis
+depuis DevilutionX Thor. La vérification n'a lieu qu'une fois par lancement et
+ne gêne pas le jeu si le réseau est absent.
+
 ## Réglages
 
 - **Réglages → Network → Second Screen** : active ou désactive l'écran du bas.
@@ -101,5 +110,6 @@ Install `devilutionx-thor.apk` from the latest release (bump `THOR_VERSION` and 
 installs as **DevilutionX Thor** (`org.diasurgical.devilutionx.thor`) next to the
 regular app, with its own data folder
 `Android/data/org.diasurgical.devilutionx.thor/files/` for `DIABDAT.MPQ` and saves.
-Toggle the bottom screen in **Settings → Network → Second Screen**. See the French
+Toggle the bottom screen in **Settings → Network → Second Screen**. At launch, the app checks the
+latest GitHub release and offers to download and install a newer version. See the French
 section above for the technical overview and APK signing secrets.

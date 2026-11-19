@@ -75,7 +75,8 @@ jobs:
         THOR_KEYSTORE_PASSWORD: ${{ secrets.THOR_KEYSTORE_PASSWORD }}
         THOR_KEY_ALIAS: ${{ secrets.THOR_KEY_ALIAS }}
         THOR_KEY_PASSWORD: ${{ secrets.THOR_KEY_PASSWORD }}
-      run: ./gradlew assembleRelease
+      # The app checks this repository's releases for updates at launch
+      run: ./gradlew assembleRelease -PthorUpdateRepo="${{ github.repository }}"
 
     - name: Rename APK
       run: cp android-project/app/build/outputs/apk/release/app-release.apk devilutionx-thor.apk

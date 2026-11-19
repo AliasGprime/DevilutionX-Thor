@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AYN Thor edition (English and French only) -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+	<string name="update_title">DevilutionX Thor update</string>
+	<string name="update_message">Version %1$s is available (installed: %2$s). Update now?</string>
+	<string name="update_install">Update</string>
+	<string name="update_later">Later</string>
+	<string name="update_skip">Skip this version</string>
+	<string name="update_downloading">Downloading version %1$s…</string>
+	<string name="update_failed">The update could not be installed. You can download it from the release page.</string>
+	<string name="update_open_page">Open the page</string>
+</resources>

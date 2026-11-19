@@ -1,4 +1,11 @@
 def buildAsLibrary = project.hasProperty('BUILD_AS_LIBRARY')
+
+// AYN Thor edition version (THOR_VERSION, e.g. 1.2.3) and the GitHub repository
+// whose releases are checked for updates at launch (CI passes -PthorUpdateRepo).
+def thorVersion = project.file('../../THOR_VERSION').text.trim()
+def thorVersionParts = (thorVersion.tokenize('.') + ['0', '0', '0']).take(3).collect { it.isInteger() ? it.toInteger() : 0 }
+def thorVersionCode = 1000000 + thorVersionParts[0] * 10000 + thorVersionParts[1] * 100 + thorVersionParts[2]
+def thorUpdateRepo = project.findProperty('thorUpdateRepo') ?: 'AliasGprime/DevilutionX-Thor'
 def buildAsApplication = !buildAsLibrary
 if (buildAsApplication) {
 	apply plugin: 'com.android.application'
@@ -16,8 +23,11 @@ android {
 		}
 		minSdkVersion 21
 		targetSdkVersion 35
-		versionCode 29
-		versionName project.file('../../VERSION').text.trim() + '-thor' + project.file('../../THOR_VERSION').text.trim()
+		// Grows with THOR_VERSION so that each release installs as an update
+		versionCode thorVersionCode
+		versionName project.file('../../VERSION').text.trim() + '-thor' + thorVersion
+		buildConfigField 'String', 'THOR_VERSION', "\"${thorVersion}\""
+		buildConfigField 'String', 'THOR_UPDATE_REPO', "\"${thorUpdateRepo}\""
 		externalNativeBuild {
 			cmake {
 				arguments "-DANDROID_STL=c++_static"
