@@ -41,8 +41,9 @@ contrôler Diablo.
 - **Réglages → Network → Second Screen** : active ou désactive l'écran du bas.
 - **Réglages → Network → Hide Control Panel** : masque le panneau de contrôle de
   l'écran du haut tant que l'écran du bas l'affiche (activé par défaut). Le panneau
-  revient automatiquement si l'écran du bas est fermé, et pendant la saisie d'un
-  message de chat en multijoueur.
+  revient automatiquement si l'écran du bas est fermé, tant que l'inventaire ou le
+  coffre est ouvert (pour glisser des objets dans la ceinture), et pendant la
+  saisie d'un message de chat en multijoueur.
 - Dans cette version, *Pause Game When Window Loses Focus* est désactivé par défaut.
 - Dans ⚙ sur l'écran du bas : langue, affichage des noms et des objets sur la
   carte, quêtes non découvertes.
@@ -91,7 +92,8 @@ resistances), **items** (equipment durability with alerts, belt, potion count),
 **quests** and a touch **HUD** (life/mana orbs, belt, CHAR/QUESTS/MAP/MENU/INV/SPELLS
 buttons, ready spell, level up, info text), in English or French. While the HUD is
 on the bottom screen, the control panel is hidden on the top screen so the game
-uses the whole screen (Settings → Network → Hide Control Panel). Touching the bottom screen does not take the
+uses the whole screen (it comes back while the inventory or stash is open, to drag
+items to the belt) (Settings → Network → Hide Control Panel). Touching the bottom screen does not take the
 input focus (or the gamepad) away from the game.
 
 Install `devilutionx-thor.apk` from the latest release (bump `THOR_VERSION` and push to `ayn-thor` to publish a new release). It

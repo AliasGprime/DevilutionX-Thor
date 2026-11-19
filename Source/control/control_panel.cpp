@@ -54,8 +54,9 @@ OptionalOwnedClxSpriteList GoldBoxBuffer;
 
 bool IsMainPanelHidden()
 {
-	// The chat input lives in the main panel, so it comes back while typing.
-	return MainPanelHidden && !ChatFlag && gnScreenWidth > MainPanel.size.width;
+	// The panel comes back while it is needed on the main screen: the chat input
+	// lives in it, and the belt is used to move items to/from the inventory and stash.
+	return MainPanelHidden && !ChatFlag && !invflag && !IsStashOpen && gnScreenWidth > MainPanel.size.width;
 }
 
 void SetMainPanelHidden(bool hidden)
